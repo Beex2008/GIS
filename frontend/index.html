@@ -13,15 +13,15 @@
 
     <!--<script src="js/script.js"></script>-->
     <!--<script src="js/api.js"></script>-->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet">
-    <title>Heincke Mapping</title>
+    <!-- <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet">-->
+      <title>Heincke Mapping</title>
   </head>
 
   <body>
 
-    <div class="overlay"><!--  -->
+    <div class="overlay">
       <h1>Parameters auswählen</h1>
       <form id="set_params"> <!--action="/docker-knzilewis-web/cgi-bin/api/getFormInput.sh">-->
         <label for="begin_date">Start</label><input type="date" name="begin_date" id="begin_date" max="2024-02-22">
@@ -46,6 +46,7 @@
 
     <div id="map"></div>
 
+
     <script>
       window.onload = mapShow
 
@@ -68,53 +69,69 @@
         slider.oninput = function() {
           output.innerHTML = slider.value;
         }
+        document.getElementById('set_params').addEventListener('submit', function(event) {
+          sendData(event); 
+        });
       });
 
-
         function sendData(event) {
-        
-        if (event) {
-        event.preventDefault();}
 
-        var xhr = new XMLHttpRequest();
-        var url = "/docker-knzilewis-web/cgi-bin/api/getFormInput.sh";
-        
-        var formData = new FormData(document.getElementById('set_params'));
-        var queryString = new URLSearchParams(formData).toString();
-        url += "?" + queryString; 
+          if(event){
+          event.preventDefault(); }
 
-        xhr.open("GET", url, true);
-        xhr.onreadystatechange = function () {
+          var xhr = new XMLHttpRequest();
+          var url = "/docker-knzilewis-web/cgi-bin/api/getFormInput.sh";
+
+          var formData = new FormData(document.getElementById('set_params'));
+          var queryString = new URLSearchParams(formData).toString();
+          url += "?" + queryString; 
+
+          xhr.open("GET", url, true);
+          xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
-                console.log(xhr.responseText);
+              console.log(xhr.responseText);
             }
-        };
-        xhr.send();
-    }
-    document.getElementById('set_params').addEventListener('submit', function(event) {
-    sendData(event);
-}); 
-      function mapShow() {
+          };
+          xhr.send();
+        }
+        // document.getElementById('set_params').addEventListener('submit',sendData); 
 
-        map = L.map('map').setView([53.53971171573007, 8.582483639967288], 16);
-        // google street layer
-        googleStreet = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-          maxZoom: 20,
-          subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-        });
 
-        googleStreet.addTo(map);
-      }
+        function mapShow() {
 
-      function resetForm() {
-        document.getElementById('set_params').reset();
-        document.getElementById("sliderValue").innerHTML = "50";
-      }
-       setInterval(() => {
-         sendData();
-         }, 1500);
-    
+          var map = L.map('map').setView([53.549999, 8.583333], 16);
+          googleStreet = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}); 
+          googleStreet.addTo(map);
+
+          var locations = [
+            [8.580591666666669,53.523028333333336],
+            [7.8943883333333345,54.17384166666667],
+            [7.894381666666665,54.17383666666666],
+            [7.894381666666667,54.17383833333333],
+            [7.894388333333333,54.173841666666654],
+            [7.8943883333333345,54.173840000000006],
+            [7.894386666666667,54.17383999999999],
+            [7.897985000000001,54.16102],
+            [7.90362,54.13215333333334],
+            [7.917833333333334,54.093491666666665]
+          ];
+
+          locations.forEach(function(loc) {
+            L.marker(loc).addTo(map);
+          });
+        }
+        function resetForm() {
+          document.getElementById('set_params').reset();
+          document.getElementById("sliderValue").innerHTML = "50";
+        }
+            setInterval(() => {
+          sendData();
+        }, 1500);
+         
     </script>
+
   </body>
 
 </html>

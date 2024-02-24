@@ -35,7 +35,7 @@ end_iso=$(date -u -d "$end" '+%Y-%m-%dT%H:%M:%S')
 
 domain="https://dashboard.awi.de/data-xxl/rest/data?"
 datelimit="beginDate=$begin_iso&endDate=$end_iso"
-other="&format=application/json&aggregate=minute&aggregateFunctions=MEAN"
+other="&format=application/json&aggregate=hour&aggregateFunctions=MEAN"
 parameter="&sensors=vessel:heincke:saab:longitude\$NRT&sensors=vessel:heincke:saab:latitude\$NRT&sensors=vessel:heincke:dwd:air_temperature\$NRT&sensors=vessel:heincke:dwd:air_pressure\$NRT&sensors=vessel:heincke:dwd:absolute_wind_direction\$NRT&sensors=vessel:heincke:dwd:absolute_wind_speed\$NRT&sensors=vessel:heincke:dwd:humidity\$NRT"
 
 # url concatenate 
@@ -44,10 +44,12 @@ url=${domain}${datelimit}${other}${parameter}
 # echo "$url"
 
 head='[vessel:heincke:saab:longitude$NRT\|vessel:heincke:saab:latitude$NRT\|vessel:heincke:dwd:air_temperature$NRT\|vessel:heincke:dwd:air_pressure$NRT\|vessel:heincke:dwd:absolute_wind_direction$NRT\|vessel:heincke:dwd:absolute_wind_speed$NRT\|vessel:heincke:dwd:humidity$NRT\|]'
-# grep -v $head
 
-test=$(curl -s "$url" | jq '.[]' | grep -v "$head")
-echo "$test"
+# grep -v $head # delete the $head charactere
+# sed '1s/^\[//; $s/\]$//' # delete the opening and closing brackets
+
+test=$(curl -s "$url" | jq '.[]' | grep -v "$head" | sed '/^\s*\[\s*\]\s*$/d' | sed ':a;N;$!ba;s/\[\n\]//g' | jq 'map(.[0:2])' | jq -c "." | sed '1s/^\[//; $s/\]$//')
+echo "$test" # > output.txt
 
 lat=$(echo "$test" | jq "map(.[0])")
 long=$(echo "$test" | jq "map(.[1])")
