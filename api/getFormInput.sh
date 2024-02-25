@@ -27,10 +27,12 @@ echo "Luftfeuchtigkeit: $humidity"
 echo "Einträge: $entry"
 
 # convert datetime in datetime UTC format 
-# converted_begin=$(date -u -d "$begin_date" +"%Y-%m-%dT00:00:00")
-# converted_end=$(date -u -d "$end_date" +"%Y-%m-%dT00:00:00")
-# converted_begin=$(date -u -d "$begin" +"%Y-%m-%dT%H:%M:%S")
-# converted_end=$(date -u -d "$end" +"%Y-%m-%dT%H:%M:%S")
+#converted_begin=$(date -u -d "$begin_date" +"%Y-%m-%dT00:00:000")
+#converted_end=$(date -u -d "$end_date" +"%Y-%m-%dT00:00:000")
+#converted_begin=$(date -u -d "$begin" +"%Y-%m-%dT%H:%M:%S.000")
+#converted_end=$(date -u -d "$end" +"%Y-%m-%dT%H:%M:%S.000")
+#echo "$converted_begin"
+#echo "$converted_end"
 
-./map.sh $begin_date $end_date $air_temperature $air_pressure $wind_direction $wind_speed $humidity $entry
+./newMap.sh $begin_date $end_date $air_temperature $air_pressure $wind_direction $wind_speed $humidity $entry
 

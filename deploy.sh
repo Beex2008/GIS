@@ -7,7 +7,7 @@ echo
 
 echo -e "deploy is starting ...\n"
 if cp -r -v api/ /$USER/usr/lib/cgi-bin/; then 
-  echo -e "copy in cgi-bin/ folder is successful  $(/usr/lib/cgi-bin/) \n"
+  echo -e "copy in cgi-bin/ folder is successful  $(/usr/lib/cgi-bin/api/) \n"
 else 
   echo "Error of copy in cgi-bin/ folder"
 fi

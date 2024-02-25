@@ -19,17 +19,19 @@ echo '    <title>Dashboard</title>'
 echo '</head>'
 echo "<body>"
 
-#echo '    <div class="overlay">'
+#echo "    <div class='overlay'>"
 #echo '      <h1>Parameters auswählen</h1>'
 #echo '      <form id="set_params"> <!--action="/docker-knzilewis-web/cgi-bin/api/getFormInput.sh">-->'
 #echo '        <label for="begin_date">Start</label><input type="date" name="begin_date" id="begin_date" max="2024-02-22">'
-#echo '        <label for="end_date">Ende</label><input type="date" name="end_date" id="end_date"  max="2024-02-22">'
+
+now="$(date +'%Y-%m-%d')"
+currentdate=$(echo "$date")
+#echo "        <label for='end_date'>Ende</label><input type='date' name='end_date' id='end_date'  max='$currentdate'>"
 #echo '        <label for="air_temperature">Lufttemperatur</label><input type="checkbox" name="air_temperature" id="air_temperature">'
 #echo '        <label for="air_pressure">Luftdruck</label><input type="checkbox" name="air_pressure" id="air_pressure">'
 #echo '        <label for="wind_direction">Windrichtung</label><input type="checkbox" name="wind_direction" id="wind_direction">'
 #echo '        <label for="wind_speed">Windgeschwindigkeit</label><input type="checkbox" name="wind_speed" id="wind_speed">'
 #echo '        <label for="humidity">Luftfeuchtigkeit</label><input type="checkbox" name="humidity" id="humidity">'
-#echo ''
 #echo '        <label for="entry">Einträge:</label>'
 #echo '        <input type="range" min="10" max="20000" value="50" step="10" id="entry" name="entry">'
 #echo ''

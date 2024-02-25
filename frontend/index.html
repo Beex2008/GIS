@@ -24,14 +24,14 @@
     <div class="overlay">
       <h1>Parameters auswählen</h1>
       <form id="set_params"> <!--action="/docker-knzilewis-web/cgi-bin/api/getFormInput.sh">-->
-        <label for="begin_date">Start</label><input type="date" name="begin_date" id="begin_date" max="2024-02-22">
-        <label for="end_date">Ende</label><input type="date" name="end_date" id="end_date"  max="2024-02-22">
+        <label for="begin_date">Start</label><input type="date" name="begin_date" id="begin_date" max="2024-02-25"/>
+        <label for="end_date">Ende</label><input type="date" name="end_date" id="end_date"  max="2025-02-25"/>
         <label for="air_temperature">Lufttemperatur</label><input type="checkbox" name="air_temperature"
-                                                                                  id="air_temperature">
-        <label for="air_pressure">Luftdruck</label><input type="checkbox" name="air_pressure" id="air_pressure">
-        <label for="wind_direction">Windrichtung</label><input type="checkbox" name="wind_direction" id="wind_direction">
-        <label for="wind_speed">Windgeschwindigkeit</label><input type="checkbox" name="wind_speed" id="wind_speed">
-        <label for="humidity">Luftfeuchtigkeit</label><input type="checkbox" name="humidity" id="humidity">
+                                                                                  id="air_temperature"/>
+        <label for="air_pressure">Luftdruck</label><input type="checkbox" name="air_pressure" id="air_pressure"/>
+        <label for="wind_direction">Windrichtung</label><input type="checkbox" name="wind_direction" id="wind_direction"/>
+        <label for="wind_speed">Windgeschwindigkeit</label><input type="checkbox" name="wind_speed" id="wind_speed"/>
+        <label for="humidity">Luftfeuchtigkeit</label><input type="checkbox" name="humidity" id="humidity"/>
 
 
         <label for="entry">Einträge:</label>
@@ -49,13 +49,35 @@
 
     <script>
       window.onload = mapShow
-
+      var map;
       document.addEventListener('DOMContentLoaded', function () {
         var output = document.getElementById("sliderValue");
         var slider = document.getElementById("entry");
 
-        var beginDate = document.getElementById("begin_date").value;
-        var endDate = document.getElementById("end_date").value;
+        // var beginDate = document.getElementById("begin_date").value;
+        //  var endDate = document.getElementById("end_date").value;
+
+        function convert_beginDate() {
+          var dateInput = document.getElementById('begin_date').value;
+          var fullDateString = dateInput + "T00:00:00"; 
+          return fullDateString;
+        }
+
+
+        document.getElementById('begin_date').addEventListener('change', function() {
+          convert_beginDate();
+
+        });
+
+        function convert_endDate() {
+          var dateInput = document.getElementById('end_date').value;
+          var fullDateString = dateInput + "T00:00:00"; 
+          return fullDateString;
+        }
+
+        document.getElementById('end_date').addEventListener('change', function() {
+          convert_endDate();
+        });
 
         // get value from Checkbox 
         var airTemperature = document.getElementById("air_temperature").checked;
@@ -74,62 +96,60 @@
         });
       });
 
-        function sendData(event) {
+      function sendData(event) {
 
-          if(event){
+        if(event){
           event.preventDefault(); }
 
-          var xhr = new XMLHttpRequest();
-          var url = "/docker-knzilewis-web/cgi-bin/api/getFormInput.sh";
+        var xhr = new XMLHttpRequest();
+        var url = "/docker-knzilewis-web/cgi-bin/api/getFormInput.sh";
 
-          var formData = new FormData(document.getElementById('set_params'));
-          var queryString = new URLSearchParams(formData).toString();
-          url += "?" + queryString; 
+        var formData = new FormData(document.getElementById('set_params'));
+        var queryString = new URLSearchParams(formData).toString();
+        url += "?" + queryString; 
 
-          xhr.open("GET", url, true);
-          xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-              console.log(xhr.responseText);
-            }
-          };
-          xhr.send();
-        }
-        // document.getElementById('set_params').addEventListener('submit',sendData); 
+        xhr.open("GET", url, true);
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log(xhr.responseText);
+            var responseData = JSON.parse(xhr.responseText);
+            var data = responseData.data; 
+            data.forEach(function(location) {
+              var lat = location[2];
+              var lng = location[1];
+              L.marker([lat, lng]).addTo(map);});
+          } 
+        };
+        xhr.send();
+      }
+      // document.getElementById('set_params').addEventListener('submit',sendData); 
 
 
-        function mapShow() {
+      function mapShow() {
 
-          var map = L.map('map').setView([53.549999, 8.583333], 16);
-          googleStreet = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}); 
-          googleStreet.addTo(map);
+        map = L.map('map').setView([53.549999, 8.583333], 16);
+        googleStreet = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 20,
+          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}); 
+        googleStreet.addTo(map);
 
-          var locations = [
-            [8.580591666666669,53.523028333333336],
-            [7.8943883333333345,54.17384166666667],
-            [7.894381666666665,54.17383666666666],
-            [7.894381666666667,54.17383833333333],
-            [7.894388333333333,54.173841666666654],
-            [7.8943883333333345,54.173840000000006],
-            [7.894386666666667,54.17383999999999],
-            [7.897985000000001,54.16102],
-            [7.90362,54.13215333333334],
-            [7.917833333333334,54.093491666666665]
-          ];
+        var locations = [
+          [8.580591666666669,53.523028333333336],
+          [7.8943883333333345,54.17384166666667],
+          [7.8943883333333345,54.173840000000006]
+        ];
 
-          locations.forEach(function(loc) {
-            L.marker(loc).addTo(map);
-          });
-        }
-        function resetForm() {
-          document.getElementById('set_params').reset();
-          document.getElementById("sliderValue").innerHTML = "50";
-        }
-            setInterval(() => {
-          sendData();
-        }, 1500);
-         
+        locations.forEach(function(loc) {
+          L.marker(loc).addTo(map);
+        });
+      } 
+
+      function resetForm() {
+        document.getElementById('set_params').reset();
+        document.getElementById("sliderValue").innerHTML = "50";
+      }
+      setInterval(sendData, 1500);
+
     </script>
 
   </body>
